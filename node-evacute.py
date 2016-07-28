@@ -7,37 +7,6 @@ import commands
 import os
 import re
 
-def cmdgrid2json(cmdgrid):
-    lines=cmdgrid.splitlines()
-    head=re.split(' {2,}', lines[0])
-    index=[lines[0].index(x) for x in head]
-    col_width=[index[x+1]-index[x] for x in range(len(index)-1)]
-    reg_pattern=''.join(['(.{'+'{0}'.format(x)+'})' for x in col_width ]) + '(.{1,})'
-     
-    json_data=[]
-    for line in lines[1:]:
-        content=re.search(reg_pattern,line).groups()
-        json_data.append({head[x]: content[x] for x in range(len(head))})
-    return json.dumps(json_data)
-
-def execcmd(cmd):
-    (status, output) = commands.getstatusoutput(cmd)
-    if( status == 0):
-        ret=(status,cmdgrid2json(output))
-    else:
-        ret=(status,output)
-    return ret
-
-command_list={'dockerps': 'docker ps',
-              'dockerimages': 'docker images',
-              'dfh': 'df -h',
-              'restartdocker': 'service docker restart',
-              'restartmachine': 'reboot',
-              'restartovs': 'service openvswitch restart',
-              'restartocnode': 'service origin-node restart',
-              'dockerstats': 'docker stats --no-stream=true $(docker ps -qa)',
-              'ocgetnode': 'oc get node'}
-    
 if __name__ == '__main__':
     (status, output) = commands.getstatusoutput('oc get node -o json')
     if(status == 0):
